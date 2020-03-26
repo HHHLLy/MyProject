@@ -1,0 +1,42 @@
+{% extends 'base/base.html' %}
+{% block title %}
+    下载页
+{% endblock %}
+{% block link %}
+ <link rel="stylesheet" href="../../static/css/base/reset.css">
+  <link rel="stylesheet" href="../../static/css/base/common.css">
+  <link rel="stylesheet" href="../../static/css/doc/docDownload.css">
+  <link rel="stylesheet" href="../../static/css/base/side.css">
+  <link rel="stylesheet" href="http://at.alicdn.com/t/font_684044_un7umbuwwfp.css">
+
+{% endblock %}
+{% block main_contain %}
+    <div class="main-contain ">
+        <div class="banner">
+            <img src="/media/doc_banner_1.jpg"
+                 alt="">
+        </div>
+        <div class="pay-doc-contain">
+            <ul class="pay-list">
+
+                {% for doc in docs %}
+
+                    <li class="pay-item">
+                        <img src="{{ doc.image_url }}" class="pay-img doc"/>
+                        <div class="d-contain">
+                            <p class="doc-title">{{ doc.title }}</p>
+                            <p class="doc-desc">{{ doc.desc }}</p>
+
+                            <a href="{% url 'doc_download' doc.id %}" class="pay-price">下载</a>
+                        </div>
+                    </li>
+
+                {% endfor %}
+
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+
+

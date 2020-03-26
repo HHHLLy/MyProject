@@ -1,0 +1,41 @@
+{% extends 'base/base.html' %}
+{% block title %}
+    学科页
+{% endblock %}
+{% block link %}
+   <link rel="stylesheet" href="../../static/css/base/reset.css">
+  <link rel="stylesheet" href="../../static/css/base/common.css">
+  <link rel="stylesheet" href="../../static/css/course/course.css">
+  <link rel="stylesheet" href="http://at.alicdn.com/t/font_684044_un7umbuwwfp.css">
+
+{% endblock %}
+{% block main %}
+    <main id="course-container">
+        <div class="w1200">
+            <ul class="course-list">
+                {% for n in course %}
+                    <li class="course-item">
+                    <a href="{% url 'course_detail' n.id %}">
+                        <img class="course-img" src="{{ n.cover_url }}"
+                            alt="潭州英语">
+                        <div class="course-content">
+                            <p class="course-info">{{ n.title }}</p>
+                            <p class="course-author">{{ n.teacher.name}}({{ n.teacher.positional_title }})</p>
+                            <p class="course-price free">免费</p>
+                        </div>
+                    </a>
+                </li>
+                {% endfor %}
+
+
+
+
+            </ul>
+        </div>
+    </main>
+{% endblock %}
+{% block script %}
+
+{% endblock %}
+
+

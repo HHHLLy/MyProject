@@ -1,0 +1,3 @@
+QINIU_ACCESS_KEY = 'FlH14cbrQNX-pkU_wsDxuI6tQSkN-d5ivZbEqAPK'
+QINIU_SECRET_KEY = 'tAEsHzllPqVzAvYPqeH0F-NgZXtxqfpLErWumq53'
+QINIU_BUCKET_NAME = 'hlydjproject'

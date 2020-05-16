@@ -92,34 +92,83 @@
 }
 /* ==== side-gift end ==== */
 /* ==== side-attention start ==== */
+.search-city {
+    border: 0;
+    border-bottom: 2px solid skyblue;
+    width: auto;
+    height: 30px;
+}
+.search-btn{
+    color: white;
+    height: 28px;
+    background-color: #3c8dbc;
+    border-color: #3c8dbc;
+    margin-left: 22px;
+
+}
 .side .side-attention {
-    height: 261px;
+    height: 393px;
     padding: 20px 20px;
     box-sizing: border-box;
     border-top: 1px solid #ddd;
     margin-top: 20px;
 }
+.side .side-attention .local-weather{
+    border-bottom: 10px solid #ddd;
+    width:320px;
+    height:80px;
+    margin-bottom: 15px;
+    position: relative;
+}
+.side .side-attention .local-weather .span-one{
+    position: absolute;
+    left:80px;
+    top:10px;
+    font-size: 23px;
+    font-weight: bold;
+    color:slategray;
+}
+.side .side-attention .local-weather .span-two{
+    position: absolute;
+    left:82px;
+    top:50px;
+    font-size: 17px;
+    font-weight: bold;
+    color:slategray;
+}
+.side .side-attention div{
+    margin: 0px;
+    width: 300px;
+    height:20px;
+}
 .side .side-attention .attention-title {
     font-size: 18px;
-}
-.side-attention .side-attention-address {
-    margin: 10px 15px;
     float: left;
 }
+.side .side-attention .attention-title span{
+    font-weight: bold;
+    color: skyblue
+}
+.side-attention .side-attention-address {
+    margin: 10px 16px;
+}
 .side-attention .side-attention-address li {
-    line-height: 66px;
+    position: relative;
+    margin-left: -12px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-top: 1px solid #D0D0D0;
 }
-.side-attention-address li i {
-    font-size: 40px;
-    vertical-align: -10px;
-    padding-right: 25px;
+.side-attention-address li span {
+    font-weight: bold;
+    display: inline-block;
+    position: absolute;
+    height: 21px;
+    line-height: 20px;
+    vertical-align: middle;
 }
-.side-attention .side-attention-qr {
-    float: right;
-    width: 100px;
-    height: 100px;
-    margin-top: 20px;
-    background: url('../../images/wechat.jpg') no-repeat center/100%;
+.side-attention-address li img {
+    width: 20px;
 }
 .side-attention .side-attention-qr p {
     text-align: center;

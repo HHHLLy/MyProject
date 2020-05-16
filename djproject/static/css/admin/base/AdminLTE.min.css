@@ -289,7 +289,7 @@ a:hover, a:active, a:focus {
 }
 
 .main-header .logo .logo-lg {
-    display: block
+    /*display: block*/
 }
 
 .main-header .logo .logo-mini {

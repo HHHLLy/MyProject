@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect,reverse
 from django.views import View
 from utils.json_fun import to_json_data
 from utils.res_codes import *
+from django.conf import settings
 from django.contrib.auth import logout,login
 import json
 from django.http import HttpResponse
@@ -27,6 +28,7 @@ class RegisterView(View):
             password = form.cleaned_data.get('password')
             mobile = form.cleaned_data.get('mobile')
             user = Users.objects.create_user(username=username,password=password,mobile=mobile)
+
             # user.save()
             login(r,user)#保存登录信息给session
             return to_json_data(errmsg="注册成功！")
@@ -51,8 +53,8 @@ class LoginView(View):
         json_data = json.loads(data.decode('utf8'))
         form = LoginForm(data=json_data,request=r)
         if form.is_valid():
-
-            return to_json_data(errno=Code.OK)
+            sDomain = settings.SITE_DOMAIN_PORT
+            return to_json_data(errno=Code.OK,data={'sDomain':sDomain})
         else:
             error_msg_list = []
             for items in form.errors.get_json_data().values():

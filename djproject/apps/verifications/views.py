@@ -16,6 +16,7 @@ from utils.res_codes import Code,error_map
 from utils.json_fun import to_json_data
 from .forms import CheckImageCodeForm,CheckResetForm
 from users.models import Users
+from celery_tasks.sms import task as sms_task
 # Create your views here.
 logger = logging.getLogger("django")
 class ImageView(View):
@@ -108,7 +109,8 @@ class SmsCodesView(View):
             # sms_num = ''
             # for i in range(6):
             #     random.choice(string.digits)#string.digits是从零至九的数字的字符串
-            sms_num = "".join([random.choice(string.digits) for i in range(SMS_CODE_NUMS)])
+            # sms_num = "".join([random.choice(string.digits) for i in range(SMS_CODE_NUMS)])
+            sms_num = '%06d' % random.randint(0, 999999)
             # 保存短信验证码
             con_redis = get_redis_connection(alias="verify_codes")
             pl = con_redis.pipeline()
@@ -128,34 +130,14 @@ class SmsCodesView(View):
                 return to_json_data(errno=Code.UNKOWNERR,errmsg=error_map[Code.UNKOWNERR])
         # 发送短信验证码
         # 为了节省资源 将跳过调用云通讯短信而直接发送成功
-
-        #     logger.info("发送验证码短信[正常][ mobile: %s sms_code: %s]" % (mobile, sms_num))
-        #     return to_json_data(errno=Code.OK, errmsg="短信验证码发送成功")
-        # else:
-        #     # 定义一个错误信息列表 也就是form里raise出的错误
-        #     err_msg_list = []
-        #     for item in form.errors.get_json_data().values():
-        #         err_msg_list.append(item[0].get('message'))
-        #         # print(item[0].get('message'))   # for test
-        #     err_msg_str = '/'.join(err_msg_list)  # 拼接错误信息为一个字符串
-        #
-        #     return to_json_data(errno=Code.PARAMERR, errmsg=err_msg_str)
-            try:
-                result = CCP().send_template_sms(mobile,
-                                                 [sms_num, SMS_CODE_REDIS_EXPIRES],
-                                                 SMS_CODE_TEMP_ID)
-            except Exception as e:
-                logger.error("发送验证码短信[异常][ mobile: %s, message: %s ]" % (mobile, e))
-                return to_json_data(errno=Code.SMSERROR, errmsg=error_map[Code.SMSERROR])
-            else:
-                if result == 0:
-                    logger.info("发送验证码短信[正常][ mobile: %s sms_code: %s]" % (mobile, sms_num))
-                    return to_json_data(errno=Code.OK, errmsg="短信验证码发送成功")
-                else:
-                    logger.warning("发送验证码短信[失败][ mobile: %s ]" % mobile)
-                    return to_json_data(errno=Code.SMSFAIL, errmsg=error_map[Code.SMSFAIL])
+            # 使用celery发送sms_num_code
+            expires = SMS_CODE_REDIS_EXPIRES
+            #delay()相当于celery发布一个异步任务
+            sms_task.send_sms_code.delay(mobile, sms_num,expires,SMS_CODE_TEMP_ID)
+            logger.info("发送验证码短信[正常][ mobile: %s sms_code: %s]" % (mobile, sms_num))
+            return to_json_data(errno=Code.OK, errmsg="短信验证码发送成功")
         else:
-            # 定义一个错误信息列表
+            # 定义一个错误信息列表 也就是form里raise出的错误
             err_msg_list = []
             for item in form.errors.get_json_data().values():
                 err_msg_list.append(item[0].get('message'))
@@ -163,6 +145,30 @@ class SmsCodesView(View):
             err_msg_str = '/'.join(err_msg_list)  # 拼接错误信息为一个字符串
 
             return to_json_data(errno=Code.PARAMERR, errmsg=err_msg_str)
+
+        #     try:
+        #         result = CCP().send_template_sms(mobile,
+        #                                          [sms_num, SMS_CODE_REDIS_EXPIRES],
+        #                                          SMS_CODE_TEMP_ID)
+        #     except Exception as e:
+        #         logger.error("发送验证码短信[异常][ mobile: %s, message: %s ]" % (mobile, e))
+        #         return to_json_data(errno=Code.SMSERROR, errmsg=error_map[Code.SMSERROR])
+        #     else:
+        #         if result == 0:
+        #             logger.info("发送验证码短信[正常][ mobile: %s sms_code: %s]" % (mobile, sms_num))
+        #             return to_json_data(errno=Code.OK, errmsg="短信验证码发送成功")
+        #         else:
+        #             logger.warning("发送验证码短信[失败][ mobile: %s ]" % mobile)
+        #             return to_json_data(errno=Code.SMSFAIL, errmsg=error_map[Code.SMSFAIL])
+        # else:
+        #     # 定义一个错误信息列表
+        #     err_msg_list = []
+        #     for item in form.errors.get_json_data().values():
+        #         err_msg_list.append(item[0].get('message'))
+        #         # print(item[0].get('message'))   # for test
+        #     err_msg_str = '/'.join(err_msg_list)  # 拼接错误信息为一个字符串
+        #
+        #     return to_json_data(errno=Code.PARAMERR, errmsg=err_msg_str)
 
 
 class ResetSmsCodesView(View):
@@ -206,7 +212,10 @@ class ResetSmsCodesView(View):
                 return to_json_data(errno=Code.UNKOWNERR,errmsg=error_map[Code.UNKOWNERR])
         # 发送短信验证码
         # 为了节省资源 将跳过调用云通讯短信而直接发送成功
-
+            # 使用celery发送sms_num_code
+            expires = SMS_CODE_REDIS_EXPIRES
+            # delay()相当于celery发布一个异步任务
+            sms_task.send_sms_code.delay(mobile, sms_num, expires, SMS_CODE_TEMP_ID)
             logger.info("发送验证码短信[正常][ mobile: %s sms_code: %s]" % (mobile, sms_num))
             return to_json_data(errno=Code.OK, errmsg="短信验证码发送成功")
         else:

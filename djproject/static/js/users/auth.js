@@ -2,8 +2,6 @@
 //async：false 是因为 默认的异步请求为True也就是说 发完ajax请求后 就会直接执行ajax后的脚本又同时等待ajax从后端返回数据
 //以上操作两个线程
 // 而关掉之后则为一个线程也就是锁住浏览器等待ajax返回数据之后才能往下运行 此为单线程
-
-
 $(function () {
   let $username = $('#user_name');  // 选择id为user_name的网页元素，需要定义一个id为user_name
   let $img = $(".form-item .captcha-graph-img img");  // 获取图像标签

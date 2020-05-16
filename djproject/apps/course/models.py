@@ -1,3 +1,4 @@
+from django.core.validators import MinLengthValidator
 from django.db import models
 
 from utils.models import ModelBase
@@ -31,10 +32,11 @@ class CourseCategory(ModelBase):
 
 
 class Course(ModelBase):
-    title = models.CharField(max_length=150, verbose_name="课程名", help_text='课程名')
+    title = models.CharField(max_length=150, validators=[MinLengthValidator(1)],verbose_name="课程名", help_text='课程名')
     cover_url = models.URLField(verbose_name="课程封面图URL", help_text='课程封面图URL')
     video_url = models.URLField(verbose_name="课程视频URL", help_text='课程视频URL')
     duration = models.FloatField(default=0.0, verbose_name="课程时长", help_text='课程时长')
+    online_play_url = models.URLField(verbose_name='在线播放URL',help_text='在线播放URL',null=True)
     profile = models.TextField(null=True, blank=True, verbose_name="课程简介", help_text='课程简介')
     outline = models.TextField(null=True, blank=True, verbose_name="课程大纲", help_text='课程大纲')
 

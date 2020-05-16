@@ -21,6 +21,7 @@
 <body>
 <!-- header start -->
 <header id="header">
+    
   <div class="mw1200 header-contain clearfix">
     <!-- logo start -->
     <h1 class="logo">
@@ -80,11 +81,11 @@
     <!-- side start -->
       <aside class="side">
           <div class="side-activities">
-              <h3 class="activities-title">在线课堂<a href="javascript:void(0)">更多</a></h3>
+              <h3 class="activities-title">在线课堂<a href="{% url 'course_index' %}">更多</a></h3>
               <div class="activities-img">
-                  <a href="javascript:void(0);" target="_blank">
-                      <img src="../../static/images/english.jpg" alt="title">
-                  </a>
+                  <video controls width="320px" class="video">
+{#                      <source  class='video_url' src="" type="video/mp4">#}
+                  </video>
                   <p class="activities-tips">对话国外小姐姐</p>
               </div>
               <ul class="activities-list">
@@ -104,47 +105,56 @@
                   </li>
               </ul>
           </div>
+
           <div class="side-attention clearfix">
-              <h3 class="attention-title">关注我</h3>
-              <ul class="side-attention-address">
-                  <li>
-                      <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-GitHub"></i>Taka</a>
-                  </li>
-                  <li>
-                      <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-zhihu"
-                                                                       style="color:rgb(0, 108, 226);"></i>Taka</a>
-                  </li>
-                  <li>
-                      <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-weibo"
-                                                                       style="color:rgb(245,92,110);"></i>Taka</a>
-                  </li>
-              </ul>
-              <div class="side-attention-qr">
-                  <p>扫码关注</p>
+              <input type="text" placeholder="输入要查询的城市"  class='search-city' id="city">
+              <input type="button" onclick="getweather()" class='search-btn' value="搜索">
+              <div class="local-weather">
+
+                  <img class = 'local-img' src="{% static 'images/weathercn/0.png' %}">
+                  <span class="span-one">
+                            加载中.....
+                  </span>
+                  <span class="span-two">
+                      南风<3级
+                  </span>
+
               </div>
+              <div>
+                  <h3 class="attention-title">位置:<span class="attention-span-one">长春</span></h3>
+                  <h3 style="float:right;">更新于<span class="attention-span-two">更新于2019年12月31日</span></h3>
+              </div>
+              <ul class="side-attention-address">
+{#                  <li>#}
+{#                      <img src="{% static 'images/weathercn/0.png' %}">#}
+{#                      <span style="position: absolute;left:20px;">多云</span>#}
+{#                      <span style="position: absolute;left: 40px;">21℃/20℃</span>#}
+{#                      <span style="position: absolute;left:70px;">26日(星期一)</span>#}
+{#                  </li>#}
+
           </div>
 
           <div class="side-hot-recommend">
               <h3 class="hot-recommend">热门推荐</h3>
               <ul class="hot-news-list">
 
-                  <li>
-                      <a href="javascript:void(0)" class="hot-news-contain clearfix">
-                          <div class="hot-news-thumbnail">
-                              <img src="../../static/images/python_web.jpg"
-                                   alt="">
-                          </div>
-                          <div class="hot-news-content">
-                              <p class="hot-news-title">Django调试工具django-debug-toolbar安装使用教程</p>
-                              <div class="hot-news-other clearfix">
-                                  <span class="news-type">python框架</span>
-                                  <!-- 自带的 -->
-                                  <time class="news-pub-time">11月11日</time>
-                                  <span class="news-author">python</span>
-                              </div>
-                          </div>
-                      </a>
-                  </li>
+{#                  <li>#}
+{#                      <a href="javascript:void(0)" class="hot-news-contain clearfix">#}
+{#                          <div class="hot-news-thumbnail">#}
+{#                              <img src="../../static/images/python_web.jpg"#}
+{#                                   alt="">#}
+{#                          </div>#}
+{#                          <div class="hot-news-content">#}
+{#                              <p class="hot-news-title">Django调试工具django-debug-toolbar安装使用教程</p>#}
+{#                              <div class="hot-news-other clearfix">#}
+{#                                  <span class="news-type">python框架</span>#}
+{#                                  <!-- 自带的 -->#}
+{#                                  <time class="news-pub-time">11月11日</time>#}
+{#                                  <span class="news-author">python</span>#}
+{#                              </div>#}
+{#                          </div>#}
+{#                      </a>#}
+{#                  </li>#}
 
               </ul>
           </div>
@@ -183,7 +193,11 @@
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
 <script src="{% static "js/commons.js" %}"></script>
 <script src="{% static "js/base/message.js" %}"></script>
+<script src="{% static 'js/base/basehtmlcoursejs.js' %}"></script>
+<script src="{% static 'js/base/basehtmlweather.js' %}"></script>
+<script src="{% static 'js/base/getweather.js' %}"></script>
 {% block script %}
+
 {% endblock %}
 
 </body>

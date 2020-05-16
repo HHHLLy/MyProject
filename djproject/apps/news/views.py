@@ -1,8 +1,8 @@
+from common.func_modle import my_time
 from django.shortcuts import render
 from django.views import View
-
+from datetime import datetime
 from djproject import settings
-from news.models import *
 from utils.json_fun import *
 import logging
 from utils.res_codes import *
@@ -10,16 +10,140 @@ from django.core.paginator import  Paginator,EmptyPage,PageNotAnInteger
 from news.models import *
 from news.constants import *
 from django.http import Http404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from course.models import *
+
 import json
+from .weather_api import get_weather
 from haystack.views import SearchView as _SearchView
 
 logger = logging.getLogger('django')
 # Create your views here.
 
+class BaseHtmlView(View):
+    def get(self,r):
+        course = Course.objects.only('title','online_play_url').filter(is_delete=False,id=2).first()
+        hotnews = HotNews.objects.select_related('news').only('news__image_url',
+                                                              'news__title',
+                                                              'news__update_time',
+                                                              'news__tag__name',
+                                                              'news__author__username',
+                                                              'news_id').filter(is_delete=False).\
+            order_by('-news__clicks')[0:SHOW_HOSTNEWS_COUNT]
+        hotnews_list = []
+        for i in hotnews:
+            lt = {
+                'image_url':i.news.image_url,
+                'title':i.news.title,
+                'update_time':i.news.update_time.strftime('%Y年%m月%d日'),
+                'tag_name':i.news.tag.name,
+                'author':i.news.author.username,
+                'id':i.news.id
+            }
+            hotnews_list.append(lt)
 
+        data = {
+            'title':course.title,
+            'video_url':course.online_play_url.replace('@',' '),
+            'hotnews_list':hotnews_list
+        }
 
+        return to_json_data(data=data)
+
+class BaseHtmlWeather(View):
+    def get(self,r):
+        weather_content = []
+        initial_content = get_weather('长春')
+        content = initial_content.get('result')
+        for i in content.get('daily'):
+            dit = {
+                "date": int(i.get('date').split('-')[-1]),
+                "week": i.get('week'),
+                "templow": i.get('night').get('templow'),
+                "weather": i.get('day').get('weather'),
+                "temp": i.get('day').get('temp'),
+                "temphigh": i.get('day').get('temphigh'),
+                "img": str(i.get('day').get('img')),
+                "winddirect": i.get('day').get('winddirect'),
+                "windpower": i.get('day').get('windpower')
+            }
+            weather_content.append(dit)
+        weather_content = weather_content[:7]
+        today_weater = weather_content.pop(0)
+        city = content.get('city')
+        updatetime = ":".join(content.get('updatetime').split(' ')[-1].split(':')[-3:-1])
+        return to_json_data(errno=Code.OK, data={"today_weather": today_weater,
+                                                 "city": city,
+                                                 "updatetime": updatetime,
+                                                 "weather_list": weather_content})
+    def post(self,r):
+        data = r.body
+        json_data = json.loads(data.decode('utf8'))
+        if not json_data:
+            return to_json_data(errno=Code.PARAMERR,errmsg='内容为空')
+        try:
+            city = str(json_data.get('city'))
+        except Exception :
+            return to_json_data(errno=Code.PARAMERR,errmsg='参数不存在')
+        try:
+            flg = get_weather(city)
+        except Exception as e:
+            return to_json_data(errno=Code.PARAMERR,errmsg='')
+        if flg.get('status') != 0:
+            return to_json_data(errno=Code.PARAMERR, errmsg=flg.get('msg'))
+        weather_content = []
+        initial_content = flg
+        content = initial_content.get('result')
+        for i in content.get('daily'):
+            dit = {
+                "date": int(i.get('date').split('-')[-1]),
+                "week": i.get('week'),
+                "templow": i.get('night').get('templow'),
+                "weather": i.get('day').get('weather'),
+                "temp": i.get('day').get('temp'),
+                "temphigh": i.get('day').get('temphigh'),
+                "img": str(i.get('day').get('img')),
+                "winddirect": i.get('day').get('winddirect'),
+                "windpower": i.get('day').get('windpower')
+            }
+            weather_content.append(dit)
+        weather_content = weather_content[:7]
+        today_weater = weather_content.pop(0)
+        city = content.get('city')
+        updatetime = ":".join(content.get('updatetime').split(' ')[-1].split(':')[-3:-1])
+        return to_json_data(errno=Code.OK, data={"today_weather": today_weater,
+                                                 "city": city,
+                                                 "updatetime": updatetime,
+                                                 "weather_list": weather_content})
+def baseHtmlweather(r):
+    weather_content = []
+    initial_content = get_weather('长春')
+    content = initial_content.get('result')
+    for i in content.get('daily'):
+        dit = {
+            "date":int(i.get('date').split('-')[-1]),
+            "week":i.get('week'),
+            "templow":i.get('night').get('templow'),
+            "weather":i.get('day').get('weather'),
+            "temp":i.get('day').get('temp'),
+            "temphigh":i.get('day').get('temphigh'),
+            "img":str(i.get('day').get('img')),
+            "winddirect":i.get('day').get('winddirect'),
+            "windpower":i.get('day').get('windpower')
+        }
+        weather_content.append(dit)
+    weather_content = weather_content[:7]
+    today_weater = weather_content.pop(0)
+    city = content.get('city')
+    updatetime  = ":".join(content.get('updatetime').split(' ')[-1].split(':')[-3:-1])
+    return to_json_data(errno=Code.OK,data={"today_weather":today_weater,
+                                            "city":city,
+                                            "updatetime":updatetime,
+                                            "weather_list":weather_content})
 
 class IndexView(View):
+    @method_decorator(cache_page(300))
     def get(self,r):
         # tags = Tag.objects.filter(is_delete=False)
         # context = {
@@ -119,9 +243,12 @@ class NewsDetailView(View):
             comments_list = []
             for comm in comments:
                 comments_list.append(comm.to_dict_data())
+
+
+
             return render(r,'news/news_detail.html',locals())
         else:
-            raise Http404('新闻{}不存在'.format(news_id))
+            return Http404('新闻{}不存在'.format(news_id))
 
 
 class NewsCommentsView(View):
@@ -156,8 +283,27 @@ class NewsCommentsView(View):
         new_comment.author = r.user
         new_comment.news_id = news_id
         new_comment.save()
-        return to_json_data(data=new_comment.to_dict_data())
+        count = Comments.objects.filter(is_delete=False, news_id=news_id).count()
 
+
+        strf_datetime = datetime.strftime(new_comment.update_time,'%Y-%m-%d %H:%M')
+
+        rst_time = my_time(strf_datetime)
+
+
+        return to_json_data(data={'news_comment':new_comment.to_dict_data(),'ccount':count,
+                                  'time':rst_time})
+
+class NewsCommentsDelView(View):
+    def get(self,r,news_id,comment_id):
+        try:
+            comment = Comments.objects.filter(id=comment_id,is_delete=False).first()
+        except Exception:
+            return to_json_data(errno=Code.PARAMERR,errmsg='没有此评论')
+        comment.is_delete = True
+        comment.save(update_fields=['is_delete','update_time'])
+        count = Comments.objects.filter(is_delete=False, news_id=news_id).count()
+        return to_json_data(errmsg='删除成功',data={'ccount':count})
 
 class SearchView(_SearchView):
     # 模版文件

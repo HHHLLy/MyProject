@@ -1,8 +1,9 @@
-
 $(function () {
   // 未登录提示框
   let $loginComment = $('.please-login-comment input');
   let $send_comment = $('.logged-comment .comment-btn');
+  // let $del_comment = $('.del_btn');
+  // console.log($del_comment.length);
 
   $('.comment-list').delegate('a,input', 'click', function () {
 
@@ -41,13 +42,17 @@ $(function () {
       })
         .done(function (res) {
           if (res.errno === "0") {
-            let one_comment = res.data;
+            let one_comment = res.data.news_comment;
             let html_comment = ``;
-            html_comment += `
+            html_comment +=  `
           <li class="comment-item">
-            <div class="comment-info clearfix">
-              <img src="/static/images/avatar.jpeg" alt="avatar" class="comment-avatar">
-              <span class="comment-user">${one_comment.author}</span>
+            <div class="comment-info clearfix" >
+              
+              <div style="float: left;">
+                <div style="float: left;"><img src="/static/images/avatar.jpeg" alt="avatar" class="comment-avatar"></div>
+                <div style="float: right;"> <span class="comment-user">${one_comment.author}</span></div>
+                </div>
+                <span style="float: right;">${res.data.time}</span>
             </div>
             <div class="comment-content">${one_comment.content}</div>
 
@@ -60,9 +65,12 @@ $(function () {
                 </div>
 
               <div class="comment_time left_float">${one_comment.update_time}</div>
+              <a onclick="del(this)" news-id="${one_comment.news_id}" comment-id="${one_comment.content_id}" class="del_btn" href="javascript:;" style="font-size:12px;color:#999;text-indent:20px; margin:10px 0 0 20px;float: right;" >
+                <i class="iconfont iconshanchu" style="font-size: 12px;">删除</i>
+            </a>
               <a href="javascript:;" class="reply_a_tag right_float">回复</a>
-              <form class="reply_form left_float" comment-id="${one_comment.content_id}" news-id="${one_comment.news_id}">
-                <textarea class="reply_input"></textarea>
+              <form class="reply_form left_float" comment-id="${one_comment.content_id}" >
+                <textarea class="reply_input" ></textarea>
                 <input type="button" value="回复" class="reply_btn right_float">
                 <input type="reset" name="" value="取消" class="reply_cancel right_float">
               </form>
@@ -72,7 +80,8 @@ $(function () {
             $(".comment-list").prepend(html_comment);
             $this.prev().val('');   // 请空输入框
             $this.parent().hide();  // 关闭评论框
-            window.location.reload();
+            $(".comment-list").load(location.href+" .comment-list");
+            // window.location.reload();
 
           } else if (res.errno === "4101") {
             // 用户未登录
@@ -93,6 +102,7 @@ $(function () {
 
     }
   });
+
 
 
   // 点击评论框，重定向到用户登录页面
@@ -147,17 +157,27 @@ $(function () {
     })
       .done(function (res) {
         if (res.errno === "0") {
-          let one_comment = res.data;
+          let one_comment = res.data.news_comment;
+          console.log(res.data.ccount);
+          $('.comment-count').html(res.data.ccount);
           let html_comment = ``;
           html_comment += `
           <li class="comment-item">
-            <div class="comment-info clearfix">
-              <img src="/static/images/avatar.jpeg" alt="avatar" class="comment-avatar">
-              <span class="comment-user">${one_comment.author}</span>
+            <div class="comment-info clearfix" >
+              
+              <div style="float: left;">
+                <div style="float: left;"><img src="/static/images/avatar.jpeg" alt="avatar" class="comment-avatar"></div>
+                <div style="float: right;"> <span class="comment-user">${one_comment.author}</span></div>
+                </div>
+                <span style="float: right;">${res.data.time}</span>
             </div>
             <div class="comment-content">${one_comment.content}</div>
 
               <div class="comment_time left_float">${one_comment.update_time}</div>
+              <a onclick="del(this)" news-id="${one_comment.news_id}" comment-id="${one_comment.content_id}" class='del_btn' href="javascript:;" 
+              style="font-size:12px;color:#999;text-indent:20px; margin:10px 0 0 20px;float: right;">
+                <i class="iconfont iconshanchu" style="font-size: 12px;">删除</i>
+            </a>
               <a href="javascript:;" class="reply_a_tag right_float">回复</a>
               <form class="reply_form left_float" comment-id="${one_comment.content_id}" news-id="${one_comment.news_id}">
                 <textarea class="reply_input"></textarea>
@@ -168,9 +188,11 @@ $(function () {
           </li>`;
 
           $(".comment-list").prepend(html_comment);
+
           $this.prev().val('');   // 请空输入框
+          $(".comment-list").load(location.href+" .comment-list");
           // $this.parent().hide();  // 关闭评论框
-          window.location.reload();
+          // window.location.reload();
 
         } else if (res.errno === "4101") {
           // 用户未登录
@@ -189,6 +211,34 @@ $(function () {
         message.showError('服务器超时，请重试！');
       });
   });
+
+  // $del_comment.click(function () {
+  //   let scomment_id = $(this).attr('comment-id');
+  //   let news_id = $(this).attr('news-id');
+  //   let _this = this;
+  //   $.ajax({
+  //     url:'/news/comments/' + news_id + '/' + scomment_id + '/del/',
+  //     type:'GET',
+  //     dataType: "json",
+  //   })
+  //       .done(function (res) {
+  //         if(res.errno === '0'){
+  //
+  //           $(_this).parent().remove();
+  //
+  //           message.showSuccess(res.errmsg);
+  //           $('.comment-count').html(res.data.ccount);
+  //         }else{
+  //           message.showError(res.errmsg)
+  //         }
+  //
+  //       })
+  //       .fail(function () {
+  //           message.showError('服务器超时，请重试！');
+  //       });
+  //
+  //
+  // });
 
   // get cookie using jQuery
   function getCookie(name) {
@@ -220,4 +270,5 @@ $(function () {
       }
     }
   });
+
 });

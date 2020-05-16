@@ -22,5 +22,23 @@ urlpatterns = [
     path('banners/add/',views.BannerAddView.as_view(),name='admin_banner_add'),
     path('banners/tags/<int:tag_id>/news/',views.BannerOfNewsByTagView.as_view(),name='admin_banner_tag_news'),
 
+    path('docs/',views.DocsManageView.as_view(),name='admin_docs_manage'),
+    path('docs/pub/',views.DocsPubView.as_view(),name='admin_docs_pub'),
+    path('docs/edit/<int:doc_id>',views.DocsEditView.as_view(),name='admin_docs_edit'),
+    path('docs/<int:doc_id>/',views.DocsEditView.as_view(),name='admin_docs_del'),
+    path('docs/files/',views.DocsUploadFileView.as_view(),name='admin_docs_upload'),
+
+    path('courses/',views.CoursesManageView.as_view(),name='admin_course_manage'),
+    path('courses/pub/',views.CoursesPubView.as_view(),name='admin_course_pub'),
+    path('courses/<int:course_id>/',views.CoursesEditView.as_view(),name='admin_course_edit'),
+
+    path('groups/',views.GroupManageView.as_view(),name='admin_group_manage'),
+    path('groups/<int:group_id>/',views.GroupEditView.as_view(),name='admin_group_del'),
+    path('groups/<int:group_id>/',views.GroupEditView.as_view(),name='admin_group_edit'),
+    path('groups/add/',views.GroupsAddView.as_view(),name='admin_group_add'),
+    path('users/',views.UsersManageView.as_view(),name='admin_user_manage'),
+    path('users/<int:user_id>/',views.UsersEditView.as_view(),name='admin_user_edit'),
+    # path('users/<int:user_id>/',views.UsersEditView.as_view(),name='admin_user_del'),
+
     path('test/',views.test,{'name':'aaa'}),
 ]

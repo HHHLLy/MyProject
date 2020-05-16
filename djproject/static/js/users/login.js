@@ -65,8 +65,16 @@ $(function () {
           console.log('成功的下一步');
           setTimeout(function () {
             // 注册成功之后重定向到打开登录页面之前的页面
-            window.location.href = document.referrer;
-          }, 1000)
+            // window.location.href = document.referrer;
+            let sCurrentUrl = $(location).attr('href');
+            if (sCurrentUrl.indexOf('?next=') !== -1){
+              window.location.href = res.data.sDomain + sCurrentUrl.split('=')[1];
+
+            }else{
+              window.location.href = document.referrer;
+            }
+
+          }, 800)
         } else {
           // 登录失败，打印错误信息
           message.showError(res.errmsg);

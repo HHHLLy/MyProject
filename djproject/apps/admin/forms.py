@@ -1,5 +1,7 @@
 from django import forms
 from news.models import *
+from doc.models import *
+from course.models import *
 from news.models import News, Tag
 class TagEditForm(forms.Form):
     name = forms.CharField(min_length=1,max_length=10,error_messages={"min_length": "用户名长度要大于5",
@@ -18,8 +20,6 @@ class TagEditForm(forms.Form):
             tag = Tag.objects.filter(id=self.tag_id,is_delete=False).first()
             tag.name = name
             tag.save(update_fields=['name'])
-
-
 
 class NewsPubForm(forms.ModelForm):
     """
@@ -90,4 +90,57 @@ class BannersUpdateForm(forms.ModelForm):
             },
 
 
+        }
+
+class DocsPubForm(forms.ModelForm):
+    """
+    """
+    image_url = forms.URLField(label='文档缩略图url',
+                               error_messages={"required": "文档缩略图url不能为空"})
+
+    file_url = forms.URLField(label='文档url',
+                               error_messages={"required": "文档url不能为空"})
+
+    class Meta:
+        model = Doc  # 与数据库模型关联
+        # 需要关联的字段
+        # exclude 排除
+        fields = ['title', 'desc', 'file_url', 'image_url']
+        error_messages = {
+            'title': {
+                'max_length': "文档标题长度不能超过150",
+                'min_length': "文档标题长度大于1",
+                'required': '文档标题不能为空',
+            },
+            'desc': {
+                'max_length': "文档描述长度不能超过200",
+                'min_length': "文档描述长度大于1",
+                'required': '文档描述不能为空',
+            },
+
+        }
+
+class CoursesPubForm(forms.ModelForm):
+    """create courses pub form
+    """
+    cover_url = forms.URLField(label='封面图url',
+                               error_messages={"required": "封面图url不能为空",
+                                               'invalid': '请填写正确的封面地址',
+                                               })
+
+    video_url = forms.URLField(label='视频url',
+                               error_messages={"required": "视频url不能为空",
+                                               'invalid':'请填写正确的视频地址'})
+    online_play_url = forms.URLField(label='在线播放url',required=False,error_messages={'invalid':'请填写正确的在线视频地址'})
+    class Meta:
+        model = Course  # 与数据库模型关联
+        # 需要关联的字段
+        # exclude 排除
+        exclude = ['is_delete', 'create_time', 'update_time']
+        error_messages = {
+            'title': {
+                'max_length': "视频标题长度不能超过150",
+                'min_length': "视频标题长度大于1",
+                'required': '视频标题不能为空',
+            },
         }

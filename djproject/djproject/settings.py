@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #在把app移入apps包中后 为了使系统话可以找到这些文件
     # 只需要把右键apps找到Mark Directory as 设置为根目录即可
+    'common.common_text',
     'news',
     'doc',
     'course',
@@ -57,7 +58,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -80,6 +81,9 @@ TEMPLATES = [
             ],
 
             'builtins':['django.templatetags.static'],
+            'libraries':{
+                'common_text':'common.common_text',
+            }
         },
     },
 ]
@@ -122,6 +126,7 @@ DATABASES = {
 
 
 CACHES = {
+    #默认redis缓存
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",  # 指定redis缓存后端
         "LOCATION": "redis://127.0.0.1:6379/0",
@@ -148,6 +153,14 @@ CACHES = {
     "sms_codes": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/3",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    "page_cache": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/4",
+        "TIMEOUT":120,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -252,3 +265,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 SITE_DOMAIN_PORT = 'http://127.0.0.1:8000'
 FASTDFS_SERVER_DOMAIN = 'http://127.0.0.1:8888/'
+LOGIN_URL = 'login'

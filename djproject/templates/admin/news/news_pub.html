@@ -1,14 +1,12 @@
 {% extends 'admin/base/base.html' %}
 
-
-{% block title %}
-    {% if news %}
+{% block tilte %}
+{% if news %}
         文章更新页
     {% else %}
         文章发布页
     {% endif %}
 {% endblock %}
-
 {% block content_header %}
     {% if news %}
         文章更新
@@ -16,10 +14,14 @@
         文章发布
     {% endif %}
 {% endblock %}
-
-{% block header_option_desc %}
-  书是人类进步的阶梯
+{% block content_option_desc %}
+    {% if news %}
+        编辑也需要品德
+    {% else %}
+        发布的时候亲一下
+    {% endif %}
 {% endblock %}
+
 
 {% block link %}
     <link rel="stylesheet" href="{% static 'plugins/markdown_editor/css/editormd.css' %}">

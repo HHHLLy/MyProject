@@ -1,0 +1,12 @@
+
+{% extends "base.html" %}
+{% block title %}注册页{% end %}
+{% block body %}
+
+<form action="" method="post">
+    用户名&nbsp;：<input type="text" placeholder="请输入用户名" name="username"><br>
+    密&nbsp;码&nbsp;：<input type="password" placeholder="请输入密码" name="pwd"><br>
+    确认密码：<input type="password" placeholder="请确认密码" name="repeat_pwd"><br>
+    <button type="submit">注册</button>
+</form>
+{% end %}

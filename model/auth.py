@@ -34,6 +34,15 @@ class Post(BaseModel,Base):
     image_url = Column(String(300))
     user_id = Column(Integer,ForeignKey('user.id'))
     user = relationship("User",backref="post",uselist=False,cascade="all")
+    @classmethod
+    def add_post(cls,img_url,username):
+        user = User.check_user(username)
+        if not user:
+            return False
+        post = Post(image_url=img_url,user_id=user.id)
+        session.add(post)
+        session.commit()
+        return True
     def __repr__(self):
         return "Post:user_id={}".format(self.user_id)
 

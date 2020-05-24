@@ -1,11 +1,20 @@
-{% extends "base.html" %}
-{% block title %}登录页{% end %}
-{% block body %}
-
+{% extends "user_base.html" %}
+{% block title %}Register{% end %}
+{% block form_content %}
+<h2 class="sub-agileits-w3layouts">
+    <a href="/">Sign In</a>
+</h2>
 <form action="" method="post">
     {% module xsrf_form_html() %}
-    用户名：<input type="text" placeholder="请输入用户名" name="username"><br>
-    密&nbsp码：<input type="password" placeholder="请输入密码" name="pwd"><br>
-    <button type="submit">登录</button>
+    <input type="text" name="username" placeholder="username" required=""/>
+    <input type="password" name="pwd" placeholder="Password" required=""/>
+    <a href="#" class="forgot-w3layouts">Forgot Password ?</a>
+    <div class="submit-w3l">
+        <input type="submit" value="Sign in">
+    </div>
+    <p class="p-bottom-w3ls"><a href="/register">Sign Up here</a>if u do not have an account yet.</p>
 </form>
+{% end %}
+{% block content_title %}
+Sign in
 {% end %}

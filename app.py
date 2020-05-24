@@ -4,6 +4,7 @@ import tornado.options
 from handlers.main import *
 from tornado.options import define,options
 from handlers.user import *
+from handlers.photo import *
 define(name="port",default="8888",help="listenning port",type=int)
 class Application(web.Application):
     def __init__(self):
@@ -13,7 +14,12 @@ class Application(web.Application):
             (r"/post/(?P<post_id>[0-9]+)",PostHandler),
             (r"/register",RegisterHandlers),
             (r"/login",LoginHandlers),
-            (r"/upload",UploadHandler)
+            (r"/upload",UploadHandler),
+            (r"/photo",PhotographyHandler),
+            (r"/travel",TravelHandler),
+            (r"/fashion",FashionHandler),
+            (r"/about",AboutHandler),
+            (r"/contact",ContactHandler),
         ]
         settings = dict(
             pycket={

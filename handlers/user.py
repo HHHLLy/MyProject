@@ -21,10 +21,6 @@ class RegisterHandlers(tornado.web.RequestHandler):
         return  self.redirect("/login")
 
 
-
-
-
-
 class LoginHandlers(BaseHandlers,tornado.web.RequestHandler):
 
     def get(self):

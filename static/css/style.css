@@ -6296,7 +6296,7 @@ button.bg-dark:focus {
 
 .pt-5,
 .py-5 {
-  padding-top: 3rem !important; }
+  padding-top: 0rem !important; }
 
 .pr-5,
 .px-5 {
@@ -7351,8 +7351,8 @@ h1, h2, h3, h4, h5,
     margin-bottom: 2.5em;
     display: block;
     width: 100%;
-    font-weight: 900;
-    font-size: 34px; }
+    font-weight: 400;
+    font-size: 32px; }
     @media (max-width: 991.98px) {
       #colorlib-aside #colorlib-logo {
         margin-bottom: 20px; } }

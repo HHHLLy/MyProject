@@ -1,21 +1,21 @@
 import tornado.web
+from handlers.main import BaseHandlers
 
-
-class PhotographyHandler(tornado.web.RequestHandler):
+class PhotographyHandler(BaseHandlers):
     def get(self):
         return self.render("photography.html")
-class TravelHandler(tornado.web.RequestHandler):
+class TravelHandler(BaseHandlers):
     def get(self):
         return self.render("travel.html")
 
-class FashionHandler(tornado.web.RequestHandler):
+class FashionHandler(BaseHandlers):
     def get(self):
         return self.render("fashion.html")
 
-class AboutHandler(tornado.web.RequestHandler):
+class AboutHandler(BaseHandlers):
     def get(self):
         return self.render("about.html")
 
-class ContactHandler(tornado.web.RequestHandler):
+class ContactHandler(BaseHandlers):
     def get(self):
         return self.render("contact.html")

@@ -20,6 +20,7 @@ class Application(web.Application):
             (r"/fashion",FashionHandler),
             (r"/about",AboutHandler),
             (r"/contact",ContactHandler),
+            (r"/img_upload",ImgUploadHandler)
         ]
         settings = dict(
             pycket={

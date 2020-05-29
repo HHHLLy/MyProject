@@ -1,55 +1,84 @@
 import tornado.web
 from pycket.session import SessionMixin
 from tornado.options import options
+import uuid
 import os
+from PIL import Image
 from model.auth import *
+import json
 class BaseHandlers(SessionMixin,tornado.web.RequestHandler):
     def get_current_user(self) :
         # print(self.session.get('user'))
         return self.session.get('user')
-class IndexHandlers(tornado.web.RequestHandler):
+class IndexHandlers(BaseHandlers):
     """
     用户上传图片展示
     """
-
-
     def get(self):
+
         post = session.query(Post).all()
         data = {
             "posts":post,
         }
-        return self.render("index.html",**data)
-class ExploreHandler(tornado.web.RequestHandler):
+        return  self.render("index.html",**data)
+
+class ExploreHandler(BaseHandlers):
     """
     最近上传的图片页面
     """
     def get(self):
         return self.write("最近上传的页面")
-class PostHandler(tornado.web.RequestHandler):
+class PostHandler(BaseHandlers):
     """
     单个图片的详情页面
     """
     def get(self,post_id):
         return self.write("单个图片的详情页")
+
+
+class ImgUploadHandler(BaseHandlers):
+    def post(self):
+
+        image_upload_path = "static/upload"
+        thumbnail_upload_path = "static/upload/thumbnail"
+        file_meta = self.request.files.get("image_file",[])
+        f = file_meta[0]
+
+
+        image_type = f.get("filename").split(".")[-1]
+        file_name = str(uuid.uuid1()) + "." + image_type
+        file_path = os.path.join(image_upload_path,file_name)
+        with open(file_path,"wb") as ff:
+            ff.write(f.get("body"))
+
+
+
+        im = Image.open(file_path)
+        im.thumbnail((259.69,270))
+        im.save(os.path.join(thumbnail_upload_path,file_name),image_type if image_type == "jpeg" else "png")
+        thumbnail_url = os.path.join(thumbnail_upload_path, file_name)
+
+
+        return self.write({"flag": "0","image_url":file_path,"thumbnail_url":thumbnail_url})
 class UploadHandler(BaseHandlers):
 
     @tornado.web.authenticated
     def get(self):
-
-        return self.render('uploadimage.html')
+        posttypes = session.query(PostType).all()
+        return self.render('uploadimage.html',posttypes=posttypes)
     @tornado.web.authenticated
     def post(self):
+        data =json.loads(self.request.body.decode())
+        title = data.get("title")
+        content = data.get("content")
+        img_url = data.get("image_url")
+        thumbnail_url = data.get("thumbnail_url")
+        tag_id = data.get("tag_id")
         username = self.current_user
-        upload_path = "static/upload"
-        file_meta = self.request.files.get("img_file",[])
-        for f in file_meta:
-            file_name = f.get("filename")
-            file_path = os.path.join(upload_path,file_name)
-            # print(f.get("name"))
-            # print(f.get("body"))
-            with open(file_path,"wb") as ff:
-                ff.write(f.get("body"))
 
-            flg = Post.add_post(img_url=os.path.join("upload",file_name),username=username)
-            self.write("上传成功" if flg else "没有此用户")
 
+
+        flg = Post.add_post(title=title,content=content,img_url=img_url,
+                            thumbnail_url=thumbnail_url,posttype_id=tag_id,
+                            username=username)
+        self.write({"flag":"0" if flg else "1"})

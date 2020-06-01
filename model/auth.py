@@ -43,7 +43,7 @@ class Post(BaseModel,Base):
     user_id = Column(Integer,ForeignKey('user.id'))
     user = relationship("User",backref="post",uselist=False,cascade="all")
     type_id = Column(Integer, ForeignKey('posttype.id'))
-    posttype = relationship("User", backref="posttype", uselist=False, cascade="all")
+    posttype = relationship("PostType", backref="posttype", uselist=False, cascade="all")
     @classmethod
     def add_post(cls,title,content,thumbnail_url,img_url,username,posttype_id):
         user = User.check_user(username)

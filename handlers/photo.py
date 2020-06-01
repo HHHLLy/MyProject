@@ -1,9 +1,13 @@
 import tornado.web
 from handlers.main import BaseHandlers
-
+from model.auth import *
 class PhotographyHandler(BaseHandlers):
     def get(self):
-        return self.render("photography.html")
+        username = self.current_user
+        user_obj = session.query(User).filter_by(username=username).first()
+
+
+        return self.render("photography.html",user=user_obj)
 class TravelHandler(BaseHandlers):
     def get(self):
         return self.render("travel.html")

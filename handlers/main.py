@@ -3,6 +3,7 @@ from pycket.session import SessionMixin
 from tornado.options import options
 import uuid
 import os
+
 from PIL import Image
 from model.auth import *
 import json
@@ -15,10 +16,11 @@ class IndexHandlers(BaseHandlers):
     用户上传图片展示
     """
     def get(self):
-
+        post_type = session.query(PostType).all()
         post = session.query(Post).all()
         data = {
             "posts":post,
+            "post_type":post_type,
         }
         return  self.render("index.html",**data)
 
@@ -33,7 +35,12 @@ class PostHandler(BaseHandlers):
     单个图片的详情页面
     """
     def get(self,post_id):
-        return self.write("单个图片的详情页")
+        post = session.query(Post).filter_by(id=post_id).first()
+        ptype_names = session.query(PostType).all()
+        if post:
+            return self.render("single.html",post=post,ptype_names=ptype_names)
+        else:
+            self.render("404.html")
 
 
 class ImgUploadHandler(BaseHandlers):
@@ -48,6 +55,7 @@ class ImgUploadHandler(BaseHandlers):
         image_type = f.get("filename").split(".")[-1]
         file_name = str(uuid.uuid1()) + "." + image_type
         file_path = os.path.join(image_upload_path,file_name)
+
         with open(file_path,"wb") as ff:
             ff.write(f.get("body"))
 
@@ -58,7 +66,8 @@ class ImgUploadHandler(BaseHandlers):
         im.save(os.path.join(thumbnail_upload_path,file_name),image_type if image_type == "jpeg" else "png")
         thumbnail_url = os.path.join(thumbnail_upload_path, file_name)
 
-
+        file_path = "/".join(file_path.split("/")[1:])
+        thumbnail_url = "/".join(thumbnail_url.split("/")[1:])
         return self.write({"flag": "0","image_url":file_path,"thumbnail_url":thumbnail_url})
 class UploadHandler(BaseHandlers):
 

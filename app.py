@@ -5,6 +5,9 @@ from handlers.main import *
 from tornado.options import define,options
 from handlers.user import *
 from handlers.photo import *
+from handlers.chat import *
+
+from utils import t_methods
 define(name="port",default="8888",help="listenning port",type=int)
 class Application(web.Application):
     def __init__(self):
@@ -20,7 +23,9 @@ class Application(web.Application):
             (r"/fashion",FashionHandler),
             (r"/about",AboutHandler),
             (r"/contact",ContactHandler),
-            (r"/img_upload",ImgUploadHandler)
+            (r"/chat",RoomHandler),
+            (r"/ews",EchoWebSocket),
+            (r"/img_upload",ImgUploadHandler),
         ]
         settings = dict(
             pycket={
@@ -41,6 +46,7 @@ class Application(web.Application):
             xsrf_cookies=True,
             cookie_secret='asdassaad-dda',
             debug = True,
+            ui_methods = t_methods,
             template_path = "template",#由于app文件和template文件夹同级
             static_path ="static",
         )

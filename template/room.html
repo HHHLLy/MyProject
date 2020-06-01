@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatRoom</title>
+</head>
+<body>
+<ul id="box"></ul>
+<div>
+    <textarea id="msg"></textarea>
+    <a href="javascript:void(0); onclick=send_msg_btn();">发送</a>
+</div>
+<script src="{{ static_url("js/jquery.min.js") }}"></script>
+<script>
+    var ws = new WebSocket("ws:127.0.0.1:8888/ews");
+
+    ws.onmessage=function (evt){
+
+        $("#box").append(`<p>${evt.data}</p>`);
+        $('#msg').val("");
+
+    };
+    function send_msg_btn() {
+        let msg = $('#msg');
+        ws.send(msg.val());
+
+    }
+</script>
+</body>
+</html>
